@@ -4,7 +4,6 @@ import { useEffect, useRef, useState } from "react";
 import { FaArrowLeft } from "react-icons/fa";
 import { useRouter, useParams } from "next/navigation";
 import Videojs from "@/components/videojs";
-import { set } from "mongoose";
 
 const streamPage = () => {
   const [movieName, setMovieName] = useState("");
@@ -31,15 +30,6 @@ const streamPage = () => {
         inline: false,
       },
     },
-    tracks: [
-      {
-        kind: "captions",
-        label: "English",
-        src: `/subtitles/${movieId}.vtt`,
-        srclang: "en",
-        default: true,
-      },
-    ],
   };
 
   const handlePlayerReady = (player) => {
@@ -49,11 +39,20 @@ const streamPage = () => {
       {
         kind: "captions",
         label: "English",
-        src: `/subtitles/${movieId}.vtt`,
+        src: `/subtitles/${movieId}-en.vtt`,
         srclang: "en",
         default: true,
       },
-      false
+    );
+
+    player.addRemoteTextTrack(
+      {
+        kind: "captions",
+        label: "Turkish",
+        src: `/subtitles/${movieId}-tr.vtt`,
+        srclang: "tr",
+        default: false,
+      },
     );
   };
 

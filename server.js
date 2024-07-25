@@ -23,9 +23,13 @@ app.prepare().then(() => {
   });
 
   io.on("connection", (socket) => {
-    socket.on('join-room', (roomId) => {
+    socket.on('join-room', (data) => {
+      const { roomId,username } = data;
         socket.join(roomId);
-        console.log("User joined room roomId = ", roomId);
+        io.to(roomId).emit('message', {
+          username:username,
+          message: 'joined the room'
+        });
         if (!rooms[roomId]) {
           rooms[roomId] = { clients: 0, readyCount: 0 };
         }
@@ -45,6 +49,10 @@ app.prepare().then(() => {
         } else {
           socket.broadcast.to(roomId).emit('video-event', data);
         }
+      });
+
+      socket.on('message', (message) => {
+        io.emit('message', message);
       });
     
       socket.on('disconnect', () => {

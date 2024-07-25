@@ -91,7 +91,7 @@ const watchtogetherPage = () => {
           className="p-2 rounded-md bg-gray-100 text-gray-800 mb-4 w-[18rem]"
         >
           <option value="" disabled>
-            Select a roomId
+            Select a room
           </option>
           {roomIds.map((roomId) => (
             <option key={roomId} value={roomId}>

@@ -9,6 +9,7 @@ const uploadSubtitlePage = () => {
   const [subtitle, setSubtitle] = useState(null);
   const [movieId, setMovieId] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
+  const [language, setLanguage] = useState("");
   const [failMessage, setFailMessage] = useState("");
   const [movies, setMovies] = useState([]);
   const [token, setToken] = useState(null);
@@ -57,6 +58,7 @@ const uploadSubtitlePage = () => {
     }
     const formData = new FormData();
     formData.append("subtitles", subtitle);
+    formData.append("language", language);
     formData.append("movieId", movieId);
     try {
       const response = await fetch(
@@ -110,8 +112,23 @@ const uploadSubtitlePage = () => {
             </option>
           ))}
         </select>
+        <select 
+          value={language}
+          onChange={(e) => setLanguage(e.target.value)}
+          className="p-2 rounded-md bg-gray-100 text-gray-800 mb-4 w-[18rem]"
+        >
+          <option value="" disabled>
+            Select a Language
+          </option>
+          <option value="en">
+              English
+            </option>
+            <option value="tr">
+              Turkish
+            </option>
+        </select>
         <label className="bg-blue-500 text-white p-2 rounded-md cursor-pointer w-[18rem] my-5 text-center">
-          Select Subtitle File
+          {subtitle ? subtitle.name : "Select Subtitle File"}
           <input
             type="file"
             accept=".vtt , .srt"
@@ -126,7 +143,6 @@ const uploadSubtitlePage = () => {
         >
           Upload Subtitles
         </button>
-        <p className=" text-blue-300">Subtitles must be in english.</p>
         {failMessage && !successMessage && (
           <p className="text-red-500 mt-3">{failMessage}</p>
         )}
