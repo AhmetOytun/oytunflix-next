@@ -15,6 +15,7 @@ export default function libraryPage() {
   const [accordionOpen, setAccordionOpen] = useState(false);
   const [profilePicWindowOpen, setProfilePicWindowOpen] = useState(false);
   const [token, setToken] = useState(null);
+  const [profilePic, setProfilePic] = useState(null);
 
   useEffect(() => {
     const storedToken = localStorage.getItem("X-Auth-Token");
@@ -72,6 +73,7 @@ export default function libraryPage() {
       if (response.ok) {
         const data = await response.json();
         setUserInfo(data);
+        setProfilePic(data.ProfilePicture);
       }else if(response.status == 401){
         localStorage.removeItem("X-Auth-Token");
         router.push("/login");
@@ -100,13 +102,32 @@ export default function libraryPage() {
     setProfilePicWindowOpen(!profilePicWindowOpen);
   };
 
-  const handleProfilePicChange = (newPicUrl) => {
-    setUserInfo((prev) => ({ ...prev, profilePic: newPicUrl }));
-    setProfilePicWindowOpen(false);
+  const handleProfilePicChange = (newPictureId) => {
+    fetch("/api/user/profile", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Auth-Token": token,
+      },
+      body: JSON.stringify({ ProfilePicture: newPictureId }),
+    }).then((response) => {
+      if (response.ok) {
+        setUserInfo((prev) => ({ ...prev, profilePic: newPictureId }));
+        setProfilePicWindowOpen(false);
+        setProfilePic(newPictureId);
+      } else {
+        console.error("Failed to update profile picture");
+      }
+    }
+    ).catch((error) => {
+      console.error("Error updating profile picture:", error
+      );
+    });
   };
 
   return (
     <div className="bg-gradient-to-t from-gray-400 to-gray-800 min-h-screen">
+      {loading ||
       <nav className="flex flex-col lg:flex-row lg:items-center justify-between p-5">
         <h1 className="text-4xl font-bold text-gray-100 text-center lg:text-start">Oytunflix</h1>
         <div className="flex flex-row items-center text-white relative justify-center py-5">
@@ -159,22 +180,29 @@ export default function libraryPage() {
               <div
                 className="border-2 border-gray-500 rounded-md mb-2 h-15 w-15 flex items-center justify-center"
                 onClick={toggleProfilePicWindow}
-              >
-                <img
+              >{
+                profilePic ?
+                (<img
                   className="rounded-md h-14 w-14 hover:cursor-pointer"
-                  src={userInfo.profilePic || "https://samurai-gamers.com/wp-content/uploads/2023/09/sg-p5t-mona-character-icon.png"} //must be 200x200
+                  src={`/images/${profilePic}.png`} //must be 200x200
                   alt="Avatar"
-                />
+                />) : (
+                  <img
+                  className="rounded-md h-14 w-14 hover:cursor-pointer"
+                  src="/images/0.png" //must be 200x200
+                  alt="Avatar"
+                />)
+              }
               </div>
               {profilePicWindowOpen && (
-                <div className="absolute top-full mt-2 w-40 bg-gray-700 rounded-md shadow-lg z-10 p-2">
+                <div className="absolute top-full mt-2 w-16 flex flex-col justify-center items-center bg-gray-700 rounded-md shadow-lg z-10 p-2">
                   {[1, 2, 3, 4, 5, 6].map((i) => (
                     <img
                       key={i}
-                      src={`https://via.placeholder.com/200?text=Profile+${i}`}
+                      src={`/images/${i}.png`}
                       className="rounded-md h-10 w-10 cursor-pointer mb-1"
                       alt={`Profile ${i}`}
-                      onClick={() => handleProfilePicChange(`https://via.placeholder.com/200?text=Profile+${i}`)}
+                      onClick={() => handleProfilePicChange(i)}
                     />
                   ))}
                 </div>
@@ -183,6 +211,7 @@ export default function libraryPage() {
           </div>
         </div>
       </nav>
+}
 
       <div className="p-5">
         {loading ? (

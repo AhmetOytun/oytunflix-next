@@ -24,5 +24,5 @@ export async function middleware(req) {
 }
 
 export const config = {
-    matcher: ["/api/library", "/api/user/info","/api/[movieId]/[userId"],
+    matcher: ["/api/library", "/api/user/info","/api/[movieId]/[userId","/api/user/profile"],
 };
