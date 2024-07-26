@@ -9,7 +9,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <head>
-        <meta charSet="UTF-8"/>
+        <link rel="icon" href="/images/logo.webp" />
       </head>
       <body>{children}</body>
     </html>
