@@ -113,13 +113,14 @@ const extractScreenshots = async (movieFilePath, mergedTime, fileName) => {
           let processedCount = 0;
 
           for (let i = 1; i <= ssCount; i++) {
-              const ssFilePath = path.join(screenshotsDir, `${mergedTime}-${fileName}_screenshot_${i}.png`);
+              let ssFilePath = path.join(screenshotsDir, `${mergedTime}-${fileName}_screenshot_${i}.png`);
               const ssTime = i * interval;
 
               ffmpeg(movieFilePath)
                   .seekInput(ssTime)
                   .output(ssFilePath)
                   .on('end', async function() {
+                    // DO NOTHING DONT DELETE THIS
                   })
                   .on('error', async function(err) {
                     // DO NOTHING DONT DELETE THIS
@@ -128,7 +129,6 @@ const extractScreenshots = async (movieFilePath, mergedTime, fileName) => {
                           .jpeg({ quality: 50 })
                           .toFile(ssFilePath.replace('.png', '.jpg'));
                           fs.unlinkSync(ssFilePath);
-                          ssFilePath = ssFilePath.replace('.png', '.jpg');
                   } catch (err) {
                       console.error("Error compressing image:", err);
                       reject(err);
@@ -200,7 +200,7 @@ export const POST = async (req, res) => {
             MovieFileName: `${mergedTime}-${fileName}`,
             MovieSmallImage: formData.get("MovieSmallImage"),
             MovieDuration: formData.get("MovieDuration"),
-            MovieScreenshots: Array.from({ length: 5 }, (_, i) => `${mergedTime}-${fileName}_screenshot_${i + 1}.png`),
+            MovieScreenshots: Array.from({ length: 5 }, (_, i) => `${mergedTime}-${fileName}_screenshot_${i + 1}.jpg`),
         });
 
         console.log("Movie saved successfully");
