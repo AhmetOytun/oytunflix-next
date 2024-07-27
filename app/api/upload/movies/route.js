@@ -5,6 +5,7 @@ import fs from "fs";
 import ffmpeg from "fluent-ffmpeg";
 import Movie from "@/models/movie";
 import { connectToDB } from "@/utils/database";
+import sharp from "sharp";
 
 const mergeChunks = async (fileName, totalChunks, mergedTime) => {
   const chunkDir = path.join(process.cwd(), "public", "chunks");
@@ -90,44 +91,54 @@ const convertToMp4 = async (mergedTime, fileName) => {
     });
 }
 
+
 const extractScreenshots = async (movieFilePath, mergedTime, fileName) => {
-    return new Promise((resolve, reject) => {
-        const screenshotsDir = path.join(process.cwd(), 'public', 'screenshots');
-        const ssCount = 5;
-        //filename: `${mergedTime}-${fileName}_screenshot_%i.png`
+  return new Promise((resolve, reject) => {
+      const screenshotsDir = path.join(process.cwd(), 'public', 'screenshots');
+      const ssCount = 5;
 
-        if (!fs.existsSync(screenshotsDir)) {
-            fs.mkdirSync(screenshotsDir, { recursive: true });
-        }
+      if (!fs.existsSync(screenshotsDir)) {
+          fs.mkdirSync(screenshotsDir, { recursive: true });
+      }
 
-        ffmpeg.ffprobe(movieFilePath, (err, metadata) => {
-            if (err) {
-                console.error("Error getting video metadata:", err);
-                reject(err);
-            }
+      ffmpeg.ffprobe(movieFilePath, (err, metadata) => {
+          if (err) {
+              console.error("Error getting video metadata:", err);
+              reject(err);
+          }
 
-            const duration = metadata.format.duration;
-            const interval = duration / (ssCount + 1);
+          const duration = metadata.format.duration;
+          const interval = duration / (ssCount + 1);
 
-            for (let i = 1; i <= ssCount; i++) {
-                const ssFilePath = path.join(screenshotsDir, `${mergedTime}-${fileName}_screenshot_${i}.png`);
-                const ssTime = i * interval;
+          let processedCount = 0;
 
-                ffmpeg(movieFilePath)
-                .seekInput(ssTime)
-                .output(ssFilePath)
-                .on('end', function() {
-                    console.log(`Screenshot ${i} saved`);
-                })
-                .on('error', function(err) {
-                    // DONT TOUCH THIS
-                })
-                .run();
-            }
-            resolve();
-        }
-        );
-    });
+          for (let i = 1; i <= ssCount; i++) {
+              const ssFilePath = path.join(screenshotsDir, `${mergedTime}-${fileName}_screenshot_${i}.png`);
+              const ssTime = i * interval;
+
+              ffmpeg(movieFilePath)
+                  .seekInput(ssTime)
+                  .output(ssFilePath)
+                  .on('end', async function() {
+                  })
+                  .on('error', async function(err) {
+                    // DO NOTHING DONT DELETE THIS
+                    try {
+                      await sharp(ssFilePath)
+                          .jpeg({ quality: 50 })
+                          .toFile(ssFilePath.replace('.png', '.jpg'));
+                          fs.unlinkSync(ssFilePath);
+                          ssFilePath = ssFilePath.replace('.png', '.jpg');
+                  } catch (err) {
+                      console.error("Error compressing image:", err);
+                      reject(err);
+                  }
+                  })
+                  .run();
+          }
+          resolve();
+      });
+  });
 };
 
 export const POST = async (req, res) => {
