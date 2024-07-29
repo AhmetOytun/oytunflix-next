@@ -24,9 +24,10 @@ app.prepare().then(() => {
 
   io.on("connection", (socket) => {
     socket.on('join-room', (data) => {
-      const { roomId,username } = data;
+      const { roomId,username,profilePic } = data;
         socket.join(roomId);
         io.to(roomId).emit('message', {
+          profilePic:profilePic, 
           username:username,
           message: 'joined the room'
         });

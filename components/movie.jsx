@@ -156,7 +156,7 @@ export default function Movie({
           ) : (
             <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-gray-700 rounded-md z-50 p-1 text-white text-center">
               <div
-                className="rounded-md overflow-hidden relative ml-[0.2rem] w-[22rem] h-[12rem] md:w-[46rem] md:h-[28rem] lg:w-[60rem] lg:h-[35rem] xl:w-[78rem] xl:h-[43rem]"
+                className="rounded-md overflow-hidden relative ml-[0.2rem] w-[22rem] h-[12rem] md:w-[46rem] md:h-[28rem] lg:w-[60rem] lg:h-[35rem] xl:w-[68rem] xl:h-[38rem]"
                 style={{
                   transition: "background-image 2s ease-in-out",
                   backgroundImage: `url('/screenshots/${movieScreenshots[currentScreenshotIndex]}')`,

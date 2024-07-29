@@ -14,6 +14,7 @@ const StreamTogetherPage = () => {
   const { roomId, movieId } = useParams();
   const [token, setToken] = useState(null);
   const [userName, setUserName] = useState("");
+  const [profilePicture, setProfilePicture] = useState("");
   const [chatVisible, setChatVisible] = useState(false);
   const playerRef = useRef(null);
   const socketRef = useRef(null);
@@ -140,6 +141,7 @@ const StreamTogetherPage = () => {
         const userData = await response.json();
         setUserId(userData._id);
         setUserName(userData.Username);
+        setProfilePicture(userData.ProfilePicture);
 
         const movieResponse = await fetch(`/api/library`, {
           headers: {
@@ -159,6 +161,7 @@ const StreamTogetherPage = () => {
         socketRef.current.emit("join-room", {
           roomId,
           username: userData.Username,
+          profilePic: userData.ProfilePicture,
         });
 
       } catch (error) {
@@ -207,7 +210,7 @@ const StreamTogetherPage = () => {
           >
             <FaComments className="m-3" size={30} color="white" />
           </div>
-          <Chat socket={socketRef.current} userName={userName} visible={chatVisible} />
+          <Chat socket={socketRef.current} userName={userName} visible={chatVisible} profilePicture={profilePicture} />
         </div>
       </div>
     </div>
