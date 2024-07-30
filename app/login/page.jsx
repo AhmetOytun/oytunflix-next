@@ -1,5 +1,6 @@
 "use client"
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { FaArrowLeft } from "react-icons/fa";
@@ -67,6 +68,8 @@ export default function loginPage() {
         <button className=" bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-md p-1 w-32 mt-3" onClick={(e)=>handleLogin(e)}>Log In</button>
         {(failMessage && !successMessage) && <p className="text-red-500 mt-3">{failMessage}</p>}
         {successMessage && <p className="text-green-500 mt-3">{successMessage}</p>}
+
+        <Link className="text-blue-400 text-sm mt-5 hover:underline" href="/forgotpassword">Forgot password</Link>
 
       </form>
     </div>
