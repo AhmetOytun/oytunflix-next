@@ -29,7 +29,7 @@ const StreamTogetherPage = () => {
       controls: true,
       crossorigin: "anonymous",
       fluid: true,
-      aspectRatio: "16:8",
+      aspectRatio: "16:9",
       sources: [
         {
           src: `/api/${movieId}/${userId}`,
@@ -192,7 +192,7 @@ const StreamTogetherPage = () => {
 
   return (
     <div className="w-screen h-screen flex items-center justify-center bg-black">
-      <div className="h-full w-full pt-[15rem] sm:pt-5 relative">
+      <div className="w-[90%]">
         <Videojs options={videojsOptions} onReady={handlePlayerReady} />
         <div>
           <div className="absolute top-8 left-20">
